@@ -34,3 +34,10 @@ Schedules quote departure and arrival in local wall-clock times, but the actual 
 ## Edge cases
 
 Departure times must carry a UTC offset (a `ZoneInfo` or fixed offset). Bare local strings are rejected because, at a DST boundary, a wall time like `02:30` may not exist or may exist twice. The library relies on the IANA tz database shipped with Python; if your platform lacks `zoneinfo` data, `ZoneInfo("…")` raises `ZoneInfoNotFoundError` independently of this library.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
